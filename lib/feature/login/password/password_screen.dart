@@ -1,21 +1,82 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:loading_overlay/loading_overlay.dart';
 import 'package:secpasscrypt/feature/data/list/list_screen.dart';
 import 'package:secpasscrypt/feature/navigation/navigation.dart';
+import 'package:secpasscrypt/feature/login/password/password_bloc.dart';
 
-class PasswordScreen extends StatelessWidget {
+class PasswordScreenArguments {
+  final PasswordPurpose purpose;
+
+  PasswordScreenArguments(this.purpose);
+}
+
+class PasswordScreen extends StatefulWidget {
   static const route = "/password";
+  final PasswordPurpose purpose;
+
+  PasswordScreen(this.purpose);
+
+  @override
+  _PasswordScreenState createState() => _PasswordScreenState();
+}
+
+class _PasswordScreenState extends State<PasswordScreen> {
+  final _bloc = PasswordBloc();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        _buildRationale(context),
-        _buildPasswordInput(context),
-        _buildReEnterPasswordInput(context),
-        _buildSubmit(context),
-      ],
+    return BlocListener(
+      cubit: _bloc,
+      listener: (context, state) {
+        if (state is CorrectPassword) {
+          popToRoot(context);
+          pushReplacementNamed(context, ListScreen.route);
+        }
+        if (state is IncorrectPassword) {
+          showIncorrectPasswordDialog(context);
+        }
+      },
+      child: BlocBuilder(
+        cubit: _bloc,
+        builder: (context, state) {
+          return LoadingOverlay(
+            isLoading: state is IndicateProgress,
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                _buildRationale(context),
+                _buildPasswordInput(context),
+                _buildReEnterPasswordInput(context),
+                _buildSubmit(context),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void showIncorrectPasswordDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("SecPassCrypt"),
+          content: Text("There is some problem with password you provided. Try typing it again or try doing it later."),
+          actions: <Widget>[
+            new FlatButton(
+              child: Text("Okey"),
+              onPressed: () {
+                popScreen(context);
+              },
+            )
+          ],
+        );
+      },
     );
   }
 
@@ -32,34 +93,42 @@ class PasswordScreen extends StatelessWidget {
   Widget _buildPasswordInput(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 8.0),
-      child: _buildPasswordFormField(context, "Password"),
+      child: _buildPasswordFormField(context, "Password", _passwordController),
     );
   }
 
-  Widget _buildPasswordFormField(BuildContext context, String label) {
+  Widget _buildPasswordFormField(BuildContext context, String label, TextEditingController controller) {
     return TextFormField(
+      controller: controller,
       obscureText: true,
       decoration: InputDecoration(
         labelText: label,
         border: OutlineInputBorder(),
-        suffixIcon: Icon(Icons.remove_red_eye),
       ),
     );
   }
 
   Widget _buildReEnterPasswordInput(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 8.0),
-      child: _buildPasswordFormField(context, "Re-enter password"),
-    );
+    if (widget.purpose == PasswordPurpose.SETUP) {
+      final errorText = null;
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 8.0),
+        child: _buildPasswordFormField(context, "Re-enter password", _confirmPasswordController),
+      );
+    } else {
+      return SizedBox.shrink();
+    }
   }
 
   Widget _buildSubmit(BuildContext context) {
     return Center(
       child: RaisedButton(
           onPressed: () {
-            popToRoot(context);
-            pushReplacementNamed(context, ListScreen.route);
+            _bloc.add(PasswordProvided(
+                _passwordController.text,
+                _confirmPasswordController.text,
+                widget.purpose
+            ));
           },
           child: Container(
             child: Text(
@@ -69,5 +138,11 @@ class PasswordScreen extends StatelessWidget {
           )
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _bloc.close();
+    super.dispose();
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:secpasscrypt/feature/login/biometric/biometric_screen.dart';
+import 'package:secpasscrypt/feature/login/password/password_bloc.dart';
 import 'package:secpasscrypt/feature/login/password/password_screen.dart';
 import 'package:secpasscrypt/feature/login/pattern/pattern_screen.dart';
 import 'package:secpasscrypt/feature/login/pin/pin_screen.dart';
@@ -62,7 +63,7 @@ class SetupScreen extends StatelessWidget {
         context,
         text: "PASSWORD",
         onPressed: () {
-          pushNamed(context, PasswordScreen.route);
+          pushNamed(context, PasswordScreen.route, arguments: PasswordScreenArguments(PasswordPurpose.SETUP));
         }
     );
   }

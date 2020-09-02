@@ -17,7 +17,10 @@ class RouteGenerator {
       case BiometricScreen.route:
         return MaterialPageRoute(builder: (_) => Scaffold(body: BiometricScreen()));
       case PasswordScreen.route:
-        return MaterialPageRoute(builder: (_) => Scaffold(body: PasswordScreen()));
+        return MaterialPageRoute(builder: (_) => Scaffold(
+            body: PasswordScreen(
+                (settings.arguments as PasswordScreenArguments)?.purpose
+            )));
       case PatternScreen.route:
         return MaterialPageRoute(builder: (_) => Scaffold(body: PatternScreen()));
       case PinScreen.route:

@@ -43,15 +43,16 @@ abstract class PasswordRepository {
 class RsaPasswordRepository extends PasswordRepository {
   static final db.Database _db = db.Database();
 
-  final AsymmetricKeyPair keyPair;
+  AsymmetricKeyPair get keyPair => _keyPair;
+  AsymmetricKeyPair _keyPair;
   Encrypter _encrypter;
 
-
-  RsaPasswordRepository({this.keyPair}) {
+  void setKeys(AsymmetricKeyPair keyPair) {
+    _keyPair = keyPair;
     _encrypter = Encrypter(
         RSA(
-            privateKey: keyPair.privateKey,
-            publicKey: keyPair.publicKey,
+            privateKey: _keyPair.privateKey,
+            publicKey: _keyPair.publicKey,
             encoding: RSAEncoding.PKCS1
         )
     );

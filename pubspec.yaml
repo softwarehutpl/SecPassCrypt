@@ -34,9 +34,21 @@ dependencies:
   pattern_lock: ^1.0.3
   pin_code_fields: ^4.0.0
 
+  pointycastle: ^1.0.2
+  rsa_encrypt: ^1.0.4
+  encrypt: ^4.0.2
+
+  moor: ^3.3.1
+  sqlite3_flutter_libs:
+  path_provider:
+  path:
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+  moor_generator: ^3.3.1
+  build_runner:
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

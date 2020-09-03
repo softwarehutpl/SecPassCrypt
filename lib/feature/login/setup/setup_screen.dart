@@ -74,7 +74,7 @@ class SetupScreen extends StatelessWidget {
         context,
         text: "PATTERN",
         onPressed: () {
-          pushNamed(context, PatternScreen.route);
+          pushNamed(context, PatternScreen.route, arguments: PatternScreenArguments(ScreenPurpose.SETUP));
         }
     );
   }

@@ -28,7 +28,7 @@ void main() async {
       initialScreen = PasswordScreen(ScreenPurpose.LOGIN);
       break;
     case LoginType.PATTERN:
-      initialScreen = PatternScreen();
+      initialScreen = PatternScreen(ScreenPurpose.LOGIN);
       break;
     case LoginType.PIN:
       initialScreen = PinScreen();

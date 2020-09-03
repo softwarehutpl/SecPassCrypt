@@ -41,7 +41,7 @@ class PatternBloc extends Bloc<PatternEvent, PatternState> {
 
   Stream<PatternState> setupPatternLogin(List<int> points) async* {
     try {
-      final password = _calculatePasswordBasedOnPoints(points);
+      final password = _calculatePasswordFromPoints(points);
       final keyPair = await _keyRepository.generateKeys();
       await _keyRepository.storePasswordEncryptedKeys(password, keyPair);
 
@@ -58,13 +58,13 @@ class PatternBloc extends Bloc<PatternEvent, PatternState> {
     }
   }
 
-  String _calculatePasswordBasedOnPoints(List<int> points) {
-    return points.join().hashCode.toString();
+  String _calculatePasswordFromPoints(List<int> points) {
+    return points.join();
   }
 
   Stream<PatternState> login(List<int> points) async* {
     try {
-      final password = _calculatePasswordBasedOnPoints(points);
+      final password = _calculatePasswordFromPoints(points);
       final keyPair = await _keyRepository.retrievePasswordEncryptedKeys(password);
 
       if (_passwordRepository is RsaPasswordRepository) {

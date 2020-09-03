@@ -4,6 +4,7 @@ import 'package:secpasscrypt/feature/login/password/password_bloc.dart';
 import 'package:secpasscrypt/feature/login/password/password_screen.dart';
 import 'package:secpasscrypt/feature/login/pattern/pattern_screen.dart';
 import 'package:secpasscrypt/feature/login/pin/pin_screen.dart';
+import 'package:secpasscrypt/feature/login/screen_purpose.dart';
 import 'package:secpasscrypt/feature/navigation/navigation.dart';
 
 class SetupScreen extends StatelessWidget {
@@ -63,7 +64,7 @@ class SetupScreen extends StatelessWidget {
         context,
         text: "PASSWORD",
         onPressed: () {
-          pushNamed(context, PasswordScreen.route, arguments: PasswordScreenArguments(PasswordPurpose.SETUP));
+          pushNamed(context, PasswordScreen.route, arguments: PasswordScreenArguments(ScreenPurpose.SETUP));
         }
     );
   }

@@ -6,6 +6,7 @@ import 'package:secpasscrypt/feature/login/password/password_bloc.dart';
 import 'package:secpasscrypt/feature/login/password/password_screen.dart';
 import 'package:secpasscrypt/feature/login/pattern/pattern_screen.dart';
 import 'package:secpasscrypt/feature/login/pin/pin_screen.dart';
+import 'package:secpasscrypt/feature/login/screen_purpose.dart';
 import 'package:secpasscrypt/feature/login/setup/setup_screen.dart';
 import 'package:secpasscrypt/feature/navigation/route_generator.dart';
 import 'package:secpasscrypt/repository/PasswordRepository.dart';
@@ -28,7 +29,7 @@ void main() async {
       initialScreen = BiometricScreen();
       break;
     case LoginType.PASSWORD:
-      initialScreen = PasswordScreen(PasswordPurpose.LOGIN);
+      initialScreen = PasswordScreen(ScreenPurpose.LOGIN);
       break;
     case LoginType.PATTERN:
       initialScreen = PatternScreen();

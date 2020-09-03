@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pattern_lock/pattern_lock.dart';
 import 'package:secpasscrypt/feature/data/list/list_screen.dart';
-import 'package:secpasscrypt/feature/login/setup/setup_screen.dart';
 import 'package:secpasscrypt/feature/navigation/navigation.dart';
 
 class PatternScreen extends StatelessWidget {
@@ -23,7 +22,7 @@ class PatternScreen extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Center(child: Text(
-        "Please draw pattern that should be used for protection", // TODO probably should confirm it
+        "Please draw pattern that should be used for protection",
         textAlign: TextAlign.center,
       )),
     );

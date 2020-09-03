@@ -6,12 +6,7 @@ abstract class PasswordEvent {}
 class PasswordProvided extends PasswordEvent {
   final String password;
   final String confirmedPassword;
-  final PasswordPurpose purpose;
+  final ScreenPurpose purpose;
 
   PasswordProvided(this.password, this.confirmedPassword, this.purpose);
-}
-
-enum PasswordPurpose {
-  LOGIN,
-  SETUP,
 }

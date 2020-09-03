@@ -7,6 +7,7 @@ import 'package:meta/meta.dart';
 import 'package:pointycastle/api.dart';
 import 'package:rsa_encrypt/rsa_encrypt.dart';
 import 'package:secpasscrypt/feature/login/login_type.dart';
+import 'package:secpasscrypt/feature/login/screen_purpose.dart';
 import 'package:secpasscrypt/main.dart';
 import 'package:secpasscrypt/repository/PasswordRepository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -31,10 +32,10 @@ class PasswordBloc extends Bloc<PasswordEvent, PasswordState> {
       final password = event.password;
       final confirmedPassword = event.confirmedPassword;
       switch (passwordPurpose) {
-        case PasswordPurpose.SETUP:
+        case ScreenPurpose.SETUP:
           yield* setupPasswordLogin(password, confirmedPassword);
           break;
-        case PasswordPurpose.LOGIN:
+        case ScreenPurpose.LOGIN:
           yield* login(password);
           break;
       }

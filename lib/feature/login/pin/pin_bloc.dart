@@ -30,7 +30,7 @@ class PinBloc extends Bloc<PinEvent, PinState> {
       final pin = event.pin;
       switch (event.purpose) {
         case ScreenPurpose.SETUP:
-          yield* setupPatternLogin(pin);
+          yield* setupPinLogin(pin);
           break;
         case ScreenPurpose.LOGIN:
           yield* login(pin);
@@ -39,7 +39,7 @@ class PinBloc extends Bloc<PinEvent, PinState> {
     }
   }
 
-  Stream<PinState> setupPatternLogin(String pin) async* {
+  Stream<PinState> setupPinLogin(String pin) async* {
     try {
       final keyPair = await _keyRepository.generateKeys();
       await _keyRepository.storePasswordEncryptedKeys(pin, keyPair);

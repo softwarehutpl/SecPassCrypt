@@ -1,14 +1,12 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:flutter_string_encryption/flutter_string_encryption.dart';
 import 'package:get_it/get_it.dart';
 import 'package:meta/meta.dart';
-import 'package:pointycastle/api.dart';
-import 'package:rsa_encrypt/rsa_encrypt.dart';
 import 'package:secpasscrypt/feature/login/login_type.dart';
 import 'package:secpasscrypt/feature/login/screen_purpose.dart';
 import 'package:secpasscrypt/main.dart';
+import 'package:secpasscrypt/repository/KeyRepository.dart';
 import 'package:secpasscrypt/repository/PasswordRepository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -17,6 +15,7 @@ part 'password_state.dart';
 
 class PasswordBloc extends Bloc<PasswordEvent, PasswordState> {
 
+  final _keyRepository = GetIt.I.get<KeyRepository>();
   final _passwordRepository = GetIt.I.get<PasswordRepository>();
 
   PasswordBloc() : super(PasswordInitial());
@@ -50,25 +49,16 @@ class PasswordBloc extends Bloc<PasswordEvent, PasswordState> {
     }
 
     try {
-      final rsaHelper = RsaKeyHelper();
-      final keyPair = await rsaHelper.computeRSAKeyPair(rsaHelper.getSecureRandom());
+      final keyPair = await _keyRepository.generateKeys();
+      await _keyRepository.storePasswordEncryptedKeys(password, keyPair);
+
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(loginTypePrefsKey, LoginType.PASSWORD.toString());
 
       if (_passwordRepository is RsaPasswordRepository) {
         (_passwordRepository as RsaPasswordRepository).setKeys(keyPair);
       }
 
-      final cryptor = new PlatformStringCryptor();
-      final key = await cryptor.generateKeyFromPassword(password, salt);
-      final publicKeyPem = rsaHelper.encodePublicKeyToPemPKCS1(keyPair.publicKey);
-      final privateKeyPem = rsaHelper.encodePrivateKeyToPemPKCS1(keyPair.privateKey);
-      final encryptedPublicKey = await cryptor.encrypt(publicKeyPem, key);
-      final encryptedPrivateKey = await cryptor.encrypt(privateKeyPem, key);
-
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString(encryptedPublicKeyPrefsKey, encryptedPublicKey);
-      await prefs.setString(encryptedPrivateKeyPrefsKey, encryptedPrivateKey);
-
-      await prefs.setString(loginTypePrefsKey, LoginType.PASSWORD.toString());
       yield CorrectPassword();
     } catch (e) {
       yield IncorrectPassword();
@@ -82,20 +72,7 @@ class PasswordBloc extends Bloc<PasswordEvent, PasswordState> {
     }
 
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final encryptedPublicKey = prefs.getString(encryptedPublicKeyPrefsKey);
-      final encryptedPrivateKey = prefs.getString(encryptedPrivateKeyPrefsKey);
-
-      final rsaHelper = RsaKeyHelper();
-
-      final cryptor = new PlatformStringCryptor();
-      final key = await cryptor.generateKeyFromPassword(password, salt);
-      final publicKeyPem = await cryptor.decrypt(encryptedPublicKey, key);
-      final privateKeyPem = await cryptor.decrypt(encryptedPrivateKey, key);
-      final publicKey = rsaHelper.parsePublicKeyFromPem(publicKeyPem);
-      final privateKey = rsaHelper.parsePrivateKeyFromPem(privateKeyPem);
-
-      final keyPair = AsymmetricKeyPair(publicKey, privateKey);
+      final keyPair = await _keyRepository.retrievePasswordEncryptedKeys(password);
 
       if (_passwordRepository is RsaPasswordRepository) {
         (_passwordRepository as RsaPasswordRepository).setKeys(keyPair);

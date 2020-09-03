@@ -84,7 +84,7 @@ class SetupScreen extends StatelessWidget {
         context,
         text: "PIN",
         onPressed: () {
-          pushNamed(context, PinScreen.route);
+          pushNamed(context, PinScreen.route, arguments: PinScreenArguments(ScreenPurpose.SETUP));
         }
     );
   }

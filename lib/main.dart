@@ -31,7 +31,7 @@ void main() async {
       initialScreen = PatternScreen(ScreenPurpose.LOGIN);
       break;
     case LoginType.PIN:
-      initialScreen = PinScreen();
+      initialScreen = PinScreen(ScreenPurpose.LOGIN);
       break;
   }
 

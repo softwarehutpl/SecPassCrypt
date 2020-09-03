@@ -63,6 +63,7 @@ class _PasswordScreenState extends State<PasswordScreen> {
 
   void showIncorrectPasswordDialog(BuildContext context) {
     showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (context) {
         return AlertDialog(

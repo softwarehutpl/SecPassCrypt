@@ -27,7 +27,10 @@ class RouteGenerator {
                 (settings.arguments as PatternScreenArguments)?.purpose
             )));
       case PinScreen.route:
-        return MaterialPageRoute(builder: (_) => Scaffold(body: PinScreen()));
+        return MaterialPageRoute(builder: (_) => Scaffold(
+            body: PinScreen(
+                (settings.arguments as PinScreenArguments)?.purpose
+            )));
       case ListScreen.route:
         return MaterialPageRoute(builder: (_) => ListScreen());
       case CreateScreen.route:

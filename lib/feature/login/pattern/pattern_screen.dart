@@ -60,6 +60,7 @@ class _PatternScreenState extends State<PatternScreen> {
 
   void showIncorrectPatternDialog(BuildContext context) {
     showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (context) {
         return AlertDialog(

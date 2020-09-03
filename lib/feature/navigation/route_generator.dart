@@ -22,7 +22,10 @@ class RouteGenerator {
                 (settings.arguments as PasswordScreenArguments)?.purpose
             )));
       case PatternScreen.route:
-        return MaterialPageRoute(builder: (_) => Scaffold(body: PatternScreen()));
+        return MaterialPageRoute(builder: (_) => Scaffold(
+            body: PatternScreen(
+                (settings.arguments as PatternScreenArguments)?.purpose
+            )));
       case PinScreen.route:
         return MaterialPageRoute(builder: (_) => Scaffold(body: PinScreen()));
       case ListScreen.route:

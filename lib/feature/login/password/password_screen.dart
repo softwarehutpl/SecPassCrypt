@@ -2,18 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:secpasscrypt/feature/data/list/list_screen.dart';
+import 'package:secpasscrypt/feature/login/screen_purpose.dart';
 import 'package:secpasscrypt/feature/navigation/navigation.dart';
 import 'package:secpasscrypt/feature/login/password/password_bloc.dart';
 
 class PasswordScreenArguments {
-  final PasswordPurpose purpose;
+  final ScreenPurpose purpose;
 
   PasswordScreenArguments(this.purpose);
 }
 
 class PasswordScreen extends StatefulWidget {
   static const route = "/password";
-  final PasswordPurpose purpose;
+  final ScreenPurpose purpose;
 
   PasswordScreen(this.purpose);
 
@@ -109,7 +110,7 @@ class _PasswordScreenState extends State<PasswordScreen> {
   }
 
   Widget _buildReEnterPasswordInput(BuildContext context) {
-    if (widget.purpose == PasswordPurpose.SETUP) {
+    if (widget.purpose == ScreenPurpose.SETUP) {
       final errorText = null;
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 8.0),

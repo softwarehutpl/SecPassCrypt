@@ -1,0 +1,4 @@
+enum ScreenPurpose {
+  LOGIN,
+  SETUP,
+}

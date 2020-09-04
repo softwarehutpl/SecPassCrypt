@@ -1,8 +1,6 @@
 import 'package:biometric_storage/biometric_storage.dart';
-import 'package:biometric_storage/biometric_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:secpasscrypt/feature/login/biometric/biometric_screen.dart';
-import 'package:secpasscrypt/feature/login/password/password_bloc.dart';
 import 'package:secpasscrypt/feature/login/password/password_screen.dart';
 import 'package:secpasscrypt/feature/login/pattern/pattern_screen.dart';
 import 'package:secpasscrypt/feature/login/pin/pin_screen.dart';
@@ -90,7 +88,7 @@ class SetupScreen extends StatelessWidget {
               context,
               text: "BIOMETRIC",
               onPressed: () {
-                pushNamed(context, BiometricScreen.route);
+                pushNamed(context, BiometricScreen.route, arguments: BiometricScreenArguments(ScreenPurpose.SETUP));
               }
           );
         } else {

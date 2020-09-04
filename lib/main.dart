@@ -22,7 +22,7 @@ void main() async {
   Widget initialScreen = SetupScreen();
   switch (loginType) {
     case LoginType.BIOMETRIC:
-      initialScreen = BiometricScreen();
+      initialScreen = BiometricScreen(ScreenPurpose.LOGIN);
       break;
     case LoginType.PASSWORD:
       initialScreen = PasswordScreen(ScreenPurpose.LOGIN);

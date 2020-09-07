@@ -39,7 +39,10 @@ class RouteGenerator {
       case CreateScreen.route:
         return MaterialPageRoute(builder: (_) => Scaffold(body: CreateScreen()));
       case EditScreen.route:
-        return MaterialPageRoute(builder: (_) => Scaffold(body: EditScreen()));
+        return MaterialPageRoute(builder: (_) => Scaffold(
+            body: EditScreen(
+                (settings.arguments as EditScreenArguments)?.entry
+            )));
       default:
         throw "Unsupported route parameter of value ${settings.name}. "
             "Please make sure RouteGenerator.generateRoute can handle your route.";

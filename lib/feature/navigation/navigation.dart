@@ -16,12 +16,12 @@ void popToRoot(BuildContext context) {
   popUntil(context, "/");
 }
 
-void pushNamed(
+Future pushNamed(
     BuildContext context,
     String screenName, {
       Object arguments,
     }) {
-  Navigator.of(context).pushNamed(screenName, arguments: arguments);
+  return Navigator.of(context).pushNamed(screenName, arguments: arguments);
 }
 
 void pushReplacementNamed(

@@ -16,13 +16,21 @@ class ListBloc extends Bloc<ListEvent, ListState> {
 
   @override
   Stream<ListState> mapEventToState(ListEvent event,) async* {
+    final safeState = state;
+    final entries = (safeState is ListLoaded) ? safeState.entries : <EntryWrapper>[];
+
     if (event is LoadEntries) {
+
       yield LoadingList();
-      final entries = await _passwordRepository.retrievePasswords();
-      yield ListLoaded(entries: entries.map((e) => EntryWrapper(entry: e)).toList());
+      final dbEntries = await _passwordRepository.retrievePasswords();
+      yield ListLoaded(entries: dbEntries.map((e) {
+        final oldEntryWrapperOrNull = entries.firstWhere((element) => element.entry.id == e.id, orElse: () => null);
+        final isPlainText = oldEntryWrapperOrNull?.isPlainText ?? false;
+        return EntryWrapper(entry: e, isPlainText: isPlainText);
+      }).toList());
+
     } else if (event is ToggleEntryVisibility) {
-      final safeState = state;
-      final entries = (safeState is ListLoaded) ? safeState.entries : <EntryWrapper>[];
+
       yield ListLoaded(entries: entries.map((e) {
         if (e.entry.id == event.entry.id) {
           return e.copy(isPlainText: !e.isPlainText);
@@ -30,6 +38,7 @@ class ListBloc extends Bloc<ListEvent, ListState> {
           return e;
         }
       }).toList());
+
     }
   }
 }

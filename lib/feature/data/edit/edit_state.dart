@@ -4,3 +4,7 @@ part of 'edit_bloc.dart';
 abstract class EditState {}
 
 class EditInitial extends EditState {}
+
+class UpdatingEntry extends EditState {}
+
+class EntryUpdated extends EditState {}

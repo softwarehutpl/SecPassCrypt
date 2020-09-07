@@ -62,8 +62,9 @@ class _ListScreenState extends State<ListScreen> {
             ),
             IconButton(
               icon: Icon(Icons.edit, color: Theme.of(context).accentColor,),
-              onPressed: () {
-                pushNamed(context, EditScreen.route);
+              onPressed: () async {
+                await pushNamed(context, EditScreen.route, arguments: EditScreenArguments(entry.entry));
+                _bloc.add(LoadEntries());
               },
             )
           ],

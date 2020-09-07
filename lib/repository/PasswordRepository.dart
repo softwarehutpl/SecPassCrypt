@@ -31,7 +31,7 @@ abstract class PasswordRepository {
 
   Stream<List<Password>> watchPasswords();
 
-  Future<Password> addPassword(Password password);
+  Future<Password> addEntry(Password password);
 
   Future<void> removePassword(Password password);
 
@@ -74,13 +74,13 @@ class RsaPasswordRepository extends PasswordRepository {
       );
 
   @override
-  Future<Password> addPassword(Password password) async {
+  Future<Password> addEntry(Password password) async {
     final encrypted = _encrypter.encrypt(password.plainText);
     final encryptedPassword = password.copy(encryptedText: encrypted.base64);
-    await _db.addPassword(db.PasswordsCompanion(
+    final id = await _db.addPassword(db.PasswordsCompanion(
       encryptedText: Value(encryptedPassword.encryptedText),
     ));
-    return encryptedPassword;
+    return encryptedPassword.copy(id: id);
   }
 
   @override

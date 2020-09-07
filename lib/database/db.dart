@@ -24,7 +24,7 @@ class Database extends _$Database {
 
   Stream<List<Password>> get watchAllPasswords => select(passwords).watch();
 
-  Future addPassword(PasswordsCompanion passwordCompanion) {
+  Future<int> addPassword(PasswordsCompanion passwordCompanion) {
     return into(passwords).insert(passwordCompanion);
   }
 

@@ -1,18 +1,45 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:loading_overlay/loading_overlay.dart';
+import 'package:secpasscrypt/feature/data/create/create_bloc.dart' as scb;
 import 'package:secpasscrypt/feature/navigation/navigation.dart';
 
-class CreateScreen extends StatelessWidget {
+class CreateScreen extends StatefulWidget {
   static const route = "/data/list/create";
 
   @override
+  _CreateScreenState createState() => _CreateScreenState();
+}
+
+class _CreateScreenState extends State<CreateScreen> {
+  final scb.CreateBloc _bloc = scb.CreateBloc();
+  final _textController = TextEditingController();
+
+  @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        _buildPasswordInput(context),
-        _buildSubmit(context),
-      ],
+    return BlocListener(
+      cubit: _bloc,
+      listener: (context, state) {
+        if (state is scb.EntryStored) {
+          popScreen(context);
+        }
+      },
+      child: BlocBuilder(
+        cubit: _bloc,
+        builder: (context, state) {
+          return LoadingOverlay(
+            isLoading: state is scb.StoringEntry,
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                _buildPasswordInput(context),
+                _buildSubmit(context),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -22,6 +49,7 @@ class CreateScreen extends StatelessWidget {
       child: TextFormField(
         minLines: 8,
         maxLines: 16,
+        controller: _textController,
         decoration: InputDecoration(
           alignLabelWithHint: true,
           labelText: "Enter text you want to store securely",
@@ -35,7 +63,7 @@ class CreateScreen extends StatelessWidget {
     return Center(
       child: RaisedButton(
           onPressed: () {
-            popScreen(context);
+            _bloc.add(scb.AddEntry(text: _textController.text));
           },
           child: Container(
             child: Text(
@@ -45,5 +73,11 @@ class CreateScreen extends StatelessWidget {
           )
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _bloc.close();
+    super.dispose();
   }
 }

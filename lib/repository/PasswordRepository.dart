@@ -61,7 +61,7 @@ class RsaPasswordRepository extends PasswordRepository {
   @override
   Future<List<Password>> retrievePasswords() async {
     return (await _db.allPasswords).map((e) {
-      Password.fromDataClass(e).copy(plainText: _encrypter.decrypt64(e.encryptedText));
+      return Password.fromDataClass(e).copy(plainText: _encrypter.decrypt64(e.encryptedText));
     }).toList();
   }
 

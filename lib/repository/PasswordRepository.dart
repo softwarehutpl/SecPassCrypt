@@ -98,5 +98,8 @@ class RsaPasswordRepository extends PasswordRepository {
   }
 
   @override
-  Future<void> clearPasswords() async => _db.clearPasswords();
+  Future<void> clearPasswords() async {
+    await _db.clearPasswords();
+    _keyPair = null;
+  }
 }

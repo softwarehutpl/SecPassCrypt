@@ -22,3 +22,9 @@ class RemoveEntry extends ListEvent {
 
   RemoveEntry({@required this.entry});
 }
+
+class SignOutEvent extends ListEvent { }
+
+class ConfirmSignOutEvent extends ListEvent {}
+
+class AbandonSignOutEvent extends ListEvent {}

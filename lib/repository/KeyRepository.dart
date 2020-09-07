@@ -2,8 +2,8 @@ import 'package:biometric_storage/biometric_storage.dart';
 import 'package:flutter_string_encryption/flutter_string_encryption.dart';
 import 'package:pointycastle/api.dart';
 import 'package:rsa_encrypt/rsa_encrypt.dart';
+import 'package:secpasscrypt/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:secpasscrypt/extensions/list.dart';
 
 abstract class KeyRepository {
   Future<AsymmetricKeyPair> generateKeys();
@@ -13,6 +13,8 @@ abstract class KeyRepository {
 
   Future<void> storeBiometricEncryptedKeys(AsymmetricKeyPair keyPair);
   Future<AsymmetricKeyPair> retrieveBiometricEncryptedKeys();
+
+  Future<void> clearKeys();
 
 }
 
@@ -97,6 +99,14 @@ class RsaKeysRepository extends KeyRepository {
     final keyPair = AsymmetricKeyPair(publicKey, privateKey);
 
     return keyPair;
+  }
+
+  @override
+  Future<void> clearKeys() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(loginTypePrefsKey, null);
+    await prefs.setString(_encryptedPublicKeyPrefsKey, null);
+    await prefs.setString(_encryptedPrivateKeyPrefsKey, null);
   }
 
 }

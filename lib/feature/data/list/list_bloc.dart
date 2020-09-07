@@ -51,7 +51,6 @@ class ListBloc extends Bloc<ListEvent, ListState> {
       yield ListLoaded.from(state: state);
     } else if (event is ConfirmSignOutEvent) {
       yield LoadingList.from(state: state);
-      await Future.delayed(Duration(seconds: 4)); // FIXME
       await _passwordRepository.clearPasswords();
       await _keyRepository.clearKeys();
       yield SignOutState.from(state: state);

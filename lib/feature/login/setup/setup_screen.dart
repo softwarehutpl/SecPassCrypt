@@ -1,6 +1,6 @@
+import 'package:biometric_storage/biometric_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:secpasscrypt/feature/login/biometric/biometric_screen.dart';
-import 'package:secpasscrypt/feature/login/password/password_bloc.dart';
 import 'package:secpasscrypt/feature/login/password/password_screen.dart';
 import 'package:secpasscrypt/feature/login/pattern/pattern_screen.dart';
 import 'package:secpasscrypt/feature/login/pin/pin_screen.dart';
@@ -17,10 +17,10 @@ class SetupScreen extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         _buildRationale(context),
-        _buildBiometricButton(context),
         _buildPasswordButton(context),
         _buildPatternButton(context),
         _buildPinButton(context),
+        _buildBiometricButton(context),
       ],
     );
   }
@@ -35,13 +35,13 @@ class SetupScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildBiometricButton(BuildContext context) {
+  Widget _buildPasswordButton(BuildContext context) {
     return _buildButton(
-      context,
-      text: "BIOMETRIC",
-      onPressed: () {
-        pushNamed(context, BiometricScreen.route);
-      }
+        context,
+        text: "PASSWORD",
+        onPressed: () {
+          pushNamed(context, PasswordScreen.route, arguments: PasswordScreenArguments(ScreenPurpose.SETUP));
+        }
     );
   }
 
@@ -56,16 +56,6 @@ class SetupScreen extends StatelessWidget {
             ),
           )
       ),
-    );
-  }
-
-  Widget _buildPasswordButton(BuildContext context) {
-    return _buildButton(
-        context,
-        text: "PASSWORD",
-        onPressed: () {
-          pushNamed(context, PasswordScreen.route, arguments: PasswordScreenArguments(ScreenPurpose.SETUP));
-        }
     );
   }
 
@@ -86,6 +76,25 @@ class SetupScreen extends StatelessWidget {
         onPressed: () {
           pushNamed(context, PinScreen.route, arguments: PinScreenArguments(ScreenPurpose.SETUP));
         }
+    );
+  }
+
+  Widget _buildBiometricButton(BuildContext context) {
+    return FutureBuilder(
+      future: BiometricStorage().canAuthenticate(),
+      builder: (context, snapshot) {
+        if (snapshot.data == CanAuthenticateResponse.success) {
+          return _buildButton(
+              context,
+              text: "BIOMETRIC",
+              onPressed: () {
+                pushNamed(context, BiometricScreen.route, arguments: BiometricScreenArguments(ScreenPurpose.SETUP));
+              }
+          );
+        } else {
+          return SizedBox.shrink();
+        }
+      },
     );
   }
 }

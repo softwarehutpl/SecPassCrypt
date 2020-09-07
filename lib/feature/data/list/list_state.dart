@@ -1,16 +1,26 @@
 part of 'list_bloc.dart';
 
 @immutable
-abstract class ListState {}
+abstract class ListState {
+  final List<EntryWrapper> entries;
+
+  ListState({this.entries});
+}
 
 class ListInitial extends ListState {}
 
-class LoadingList extends ListState {}
+class LoadingList extends ListState {
+
+  LoadingList({entries}): super(entries: entries);
+
+  LoadingList.from({@required ListState state}) : super(entries: state.entries);
+}
 
 class ListLoaded extends ListState {
-  final List<EntryWrapper> entries;
 
-  ListLoaded({this.entries});
+  ListLoaded({entries}): super(entries: entries);
+
+  ListLoaded.from({@required ListState state}) : super(entries: state?.entries);
 }
 
 class EntryWrapper {

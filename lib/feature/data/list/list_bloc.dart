@@ -12,16 +12,15 @@ class ListBloc extends Bloc<ListEvent, ListState> {
 
   final _passwordRepository = GetIt.I.get<PasswordRepository>();
 
+  List<EntryWrapper> get entries => state.entries ?? [];
+
   ListBloc() : super(ListInitial());
 
   @override
   Stream<ListState> mapEventToState(ListEvent event,) async* {
-    final safeState = state;
-    final entries = (safeState is ListLoaded) ? safeState.entries : <EntryWrapper>[];
-
     if (event is LoadEntries) {
 
-      yield LoadingList();
+      yield LoadingList.from(state: state);
       final dbEntries = await _passwordRepository.retrievePasswords();
       yield ListLoaded(entries: dbEntries.map((e) {
         final oldEntryWrapperOrNull = entries.firstWhere((element) => element.entry.id == e.id, orElse: () => null);
@@ -39,6 +38,11 @@ class ListBloc extends Bloc<ListEvent, ListState> {
         }
       }).toList());
 
+    } else if (event is RemoveEntry) {
+
+      yield LoadingList.from(state: state);
+      await _passwordRepository.removePassword(event.entry);
+      add(LoadEntries());
     }
   }
 }

@@ -11,6 +11,7 @@ import 'package:secpasscrypt/feature/login/setup/setup_screen.dart';
 import 'package:secpasscrypt/feature/navigation/route_generator.dart';
 import 'package:secpasscrypt/repository/KeyRepository.dart';
 import 'package:secpasscrypt/repository/PasswordRepository.dart';
+import 'package:secpasscrypt/time_lock/time_lock_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const loginTypePrefsKey = "login_type";
@@ -37,18 +38,23 @@ void main() async {
 
   _prepareDI();
 
-  runApp(MaterialApp(
-    title: "SecPassCrypt",
-    theme: ThemeData(
-      buttonTheme: ButtonThemeData(
-        minWidth: 128,
-        textTheme: ButtonTextTheme.primary
+  runApp(Listener(
+    onPointerDown: (event) {
+      GetIt.I.get<TimeLockBloc>().add(BumpUpSession());
+    },
+    child: MaterialApp(
+      title: "SecPassCrypt",
+      theme: ThemeData(
+        buttonTheme: ButtonThemeData(
+          minWidth: 128,
+          textTheme: ButtonTextTheme.primary
+        ),
+        visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      visualDensity: VisualDensity.adaptivePlatformDensity,
+      onGenerateRoute: RouteGenerator.generateRoute,
+      home: Scaffold(body: initialScreen,),
+      debugShowCheckedModeBanner: false,
     ),
-    onGenerateRoute: RouteGenerator.generateRoute,
-    home: Scaffold(body: initialScreen,),
-    debugShowCheckedModeBanner: false,
   ));
 }
 
@@ -56,4 +62,5 @@ _prepareDI() {
   final getIt = GetIt.I;
   getIt.registerSingleton<PasswordRepository>(RsaPasswordRepository());
   getIt.registerSingleton<KeyRepository>(RsaKeysRepository());
+  getIt.registerSingleton<TimeLockBloc>(TimeLockBloc());
 }

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loading_overlay/loading_overlay.dart';
-import 'package:secpasscrypt/feature/navigation/navigation.dart';
 import 'package:secpasscrypt/feature/data/edit/edit_bloc.dart';
+import 'package:secpasscrypt/feature/navigation/navigation.dart';
 import 'package:secpasscrypt/repository/PasswordRepository.dart';
+import 'package:secpasscrypt/time_lock/time_lock_screen.dart';
 
 class EditScreenArguments {
   final Password entry;
@@ -33,28 +34,30 @@ class _EditScreenState extends State<EditScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener(
-      cubit: _bloc,
-      listener: (context, state) {
-        if (state is EntryUpdated) {
-          popScreen(context);
-        }
-      },
-      child: BlocBuilder(
+    return TimeLockScreen(
+      child: BlocListener(
         cubit: _bloc,
-        builder: (context, state) {
-         return LoadingOverlay(
-           isLoading: state is UpdatingEntry,
-           child: Column(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                _buildPasswordInput(context),
-                _buildSubmit(context),
-              ],
-            ),
-         );
+        listener: (context, state) {
+          if (state is EntryUpdated) {
+            popScreen(context);
+          }
         },
+        child: BlocBuilder(
+          cubit: _bloc,
+          builder: (context, state) {
+           return LoadingOverlay(
+             isLoading: state is UpdatingEntry,
+             child: Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  _buildPasswordInput(context),
+                  _buildSubmit(context),
+                ],
+              ),
+           );
+          },
+        ),
       ),
     );
   }

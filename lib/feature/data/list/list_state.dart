@@ -23,6 +23,20 @@ class ListLoaded extends ListState {
   ListLoaded.from({@required ListState state}) : super(entries: state?.entries);
 }
 
+class ConfirmSignOutState extends ListState {
+
+  ConfirmSignOutState({entries}): super(entries: entries);
+
+  ConfirmSignOutState.from({@required ListState state}) : super(entries: state?.entries);
+}
+
+class SignOutState extends ListState {
+
+  SignOutState({entries}): super(entries: entries);
+
+  SignOutState.from({@required ListState state}) : super(entries: state?.entries);
+}
+
 class EntryWrapper {
   final Password entry;
   final bool isPlainText;

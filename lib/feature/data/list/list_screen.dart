@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:secpasscrypt/feature/data/create/create_screen.dart';
 import 'package:secpasscrypt/feature/data/edit/edit_screen.dart';
 import 'package:secpasscrypt/feature/data/list/list_bloc.dart';
+import 'package:secpasscrypt/feature/login/setup/setup_screen.dart';
 import 'package:secpasscrypt/feature/navigation/navigation.dart';
 
 class ListScreen extends StatefulWidget {
@@ -18,28 +20,93 @@ class _ListScreenState extends State<ListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _buildBody(context),
-      floatingActionButton: _buildAddButton(context),
+    return _buildScreen(context);
+  }
+
+  Widget _buildScreen(BuildContext context) {
+    return BlocListener(
+      cubit: _bloc,
+      listener: (context, state) {
+        if (state is ConfirmSignOutState) {
+          _showSignOutDialog(context);
+        }
+        if (state is SignOutState) {
+          pushReplacementNamed(context, SetupScreen.route);
+        }
+      },
+      child: BlocBuilder(
+        cubit: _bloc..add(LoadEntries()),
+        builder: (context, state) {
+          return IgnorePointer(
+            ignoring: state is LoadingList,
+            child: Scaffold(
+              appBar: _buildAppBar(context, state),
+              body: _buildBody(context, state),
+              floatingActionButton: _buildAddButton(context),
+            ),
+          );
+        },
+      ),
     );
   }
 
-  Widget _buildBody(BuildContext context) {
-    return BlocBuilder(
-      cubit: _bloc..add(LoadEntries()),
-      builder: (context, state) {
-        final entries = (state is ListLoaded) ? state.entries : <EntryWrapper>[];
-        return LoadingOverlay(
-          isLoading: state is LoadingList,
-          child: ListView.builder(
-            itemCount: entries.length,
-            itemBuilder: (context, index) {
-              return _buildItem(context, entries[index]);
-            },
-            padding: EdgeInsets.only(top: 32.0, bottom: 56.0),
-          ),
+  void _showSignOutDialog(BuildContext context) {
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("SecPassCrypt"),
+          content: Text("Are you sure you want to logout? All data will be lost."),
+          actions: <Widget>[
+            new FlatButton(
+              child: Text("Cancel"),
+              onPressed: () {
+                _bloc.add(AbandonSignOutEvent());
+                popScreen(context);
+              },
+            ),
+            new FlatButton(
+              child: Text("Okey"),
+              onPressed: () {
+                _bloc.add(ConfirmSignOutEvent());
+                popScreen(context);
+              },
+            )
+          ],
         );
       },
+    );
+  }
+
+  Widget _buildAppBar(BuildContext context, ListState state) {
+    return AppBar(
+      title: Text("SecPassCrypt"),
+      actions: <Widget>[
+        IgnorePointer(
+          ignoring: state is LoadingList,
+          child: IconButton(
+            icon: FaIcon(FontAwesomeIcons.signOutAlt),
+            onPressed: () {
+              _bloc.add(SignOutEvent());
+            },
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget _buildBody(BuildContext context, ListState state) {
+    final entries = state.entries ?? <EntryWrapper>[];
+    return LoadingOverlay(
+      isLoading: state is LoadingList,
+      child: ListView.builder(
+        itemCount: entries.length,
+        itemBuilder: (context, index) {
+          return _buildItem(context, entries[index]);
+        },
+        padding: EdgeInsets.only(top: 4.0, bottom: 56.0),
+      ),
     );
   }
 

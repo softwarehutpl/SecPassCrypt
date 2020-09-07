@@ -16,3 +16,9 @@ class EditEntry extends ListEvent {
 
   EditEntry({@required this.entry});
 }
+
+class RemoveEntry extends ListEvent {
+  final Password entry;
+
+  RemoveEntry({@required this.entry});
+}

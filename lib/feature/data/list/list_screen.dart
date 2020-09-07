@@ -60,12 +60,22 @@ class _ListScreenState extends State<ListScreen> {
                 child: Text(textToDisplay),
               ),
             ),
-            IconButton(
-              icon: Icon(Icons.edit, color: Theme.of(context).accentColor,),
-              onPressed: () async {
-                await pushNamed(context, EditScreen.route, arguments: EditScreenArguments(entry.entry));
-                _bloc.add(LoadEntries());
-              },
+            Column(
+              children: <Widget>[
+                IconButton(
+                  icon: Icon(Icons.edit, color: Theme.of(context).accentColor,),
+                  onPressed: () async {
+                    await pushNamed(context, EditScreen.route, arguments: EditScreenArguments(entry.entry));
+                    _bloc.add(LoadEntries());
+                  },
+                ),
+                IconButton(
+                  icon: Icon(Icons.delete, color: Colors.red,),
+                  onPressed: () async {
+                    _bloc.add(RemoveEntry(entry: entry.entry));
+                  },
+                ),
+              ],
             )
           ],
         ),
@@ -76,8 +86,9 @@ class _ListScreenState extends State<ListScreen> {
   Widget _buildAddButton(BuildContext context) {
     return FloatingActionButton(
       heroTag: "Create",
-      onPressed: () {
-        pushNamed(context, CreateScreen.route);
+      onPressed: () async {
+        await pushNamed(context, CreateScreen.route);
+        _bloc.add(LoadEntries());
       },
       child: Icon(Icons.add),
     );

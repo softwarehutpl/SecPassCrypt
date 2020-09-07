@@ -78,6 +78,7 @@ class _CreateScreenState extends State<CreateScreen> {
   @override
   void dispose() {
     _bloc.close();
+    _textController.dispose();
     super.dispose();
   }
 }

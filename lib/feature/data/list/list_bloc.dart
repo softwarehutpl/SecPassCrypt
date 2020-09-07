@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:collection';
 
 import 'package:bloc/bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:meta/meta.dart';
 import 'package:secpasscrypt/repository/KeyRepository.dart';
 import 'package:secpasscrypt/repository/PasswordRepository.dart';
+import 'package:async/async.dart';
 
 part 'list_event.dart';
 part 'list_state.dart';
@@ -15,6 +17,7 @@ class ListBloc extends Bloc<ListEvent, ListState> {
   final _passwordRepository = GetIt.I.get<PasswordRepository>();
 
   List<EntryWrapper> get entries => state.entries ?? [];
+  Map<int, CancelableOperation> _autoHideTimers = HashMap();
 
   ListBloc() : super(ListInitial());
 
@@ -34,6 +37,7 @@ class ListBloc extends Bloc<ListEvent, ListState> {
 
       yield ListLoaded(entries: entries.map((e) {
         if (e.entry.id == event.entry.id) {
+          _handleAutoHideTimers(e);
           return e.copy(isPlainText: !e.isPlainText);
         } else {
           return e;
@@ -54,6 +58,21 @@ class ListBloc extends Bloc<ListEvent, ListState> {
       await _passwordRepository.clearPasswords();
       await _keyRepository.clearKeys();
       yield SignOutState.from(state: state);
+    }
+  }
+
+  _handleAutoHideTimers(EntryWrapper e) {
+    final timer = _autoHideTimers[e.entry.id];
+    if (!e.isPlainText) {
+      timer?.cancel();
+      _autoHideTimers[e.entry.id] = CancelableOperation.fromFuture(
+          Future.delayed(Duration(seconds: 16))
+      )..asStream().listen((event) {
+        add(ToggleEntryVisibility(entry: e.entry));
+      });
+    } else {
+      timer?.cancel();
+      _autoHideTimers[e.entry.id] = null;
     }
   }
 }

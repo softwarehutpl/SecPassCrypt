@@ -40,7 +40,7 @@ class TimeLockBloc extends Bloc<TimeLockEvent, TimeLockState> {
   }
 
   _startFreshTimer() {
-    final _lockFuture = Future.delayed(Duration(seconds:32));
+    final _lockFuture = Future.delayed(Duration(minutes: 10));
     _lock?.cancel();
     _lock = CancelableOperation.fromFuture(_lockFuture);
     _lock.asStream().listen((event) {

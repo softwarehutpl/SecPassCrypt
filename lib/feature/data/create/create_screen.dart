@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:secpasscrypt/feature/data/create/create_bloc.dart' as scb;
 import 'package:secpasscrypt/feature/navigation/navigation.dart';
+import 'package:secpasscrypt/time_lock/time_lock_screen.dart';
 
 class CreateScreen extends StatefulWidget {
   static const route = "/data/list/create";
@@ -17,28 +18,30 @@ class _CreateScreenState extends State<CreateScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener(
-      cubit: _bloc,
-      listener: (context, state) {
-        if (state is scb.EntryStored) {
-          popScreen(context);
-        }
-      },
-      child: BlocBuilder(
+    return TimeLockScreen(
+      child: BlocListener(
         cubit: _bloc,
-        builder: (context, state) {
-          return LoadingOverlay(
-            isLoading: state is scb.StoringEntry,
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                _buildPasswordInput(context),
-                _buildSubmit(context),
-              ],
-            ),
-          );
+        listener: (context, state) {
+          if (state is scb.EntryStored) {
+            popScreen(context);
+          }
         },
+        child: BlocBuilder(
+          cubit: _bloc,
+          builder: (context, state) {
+            return LoadingOverlay(
+              isLoading: state is scb.StoringEntry,
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  _buildPasswordInput(context),
+                  _buildSubmit(context),
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }

@@ -1,23 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:pattern_lock/pattern_lock.dart';
 import 'package:secpasscrypt/feature/data/list/list_screen.dart';
 import 'package:secpasscrypt/feature/login/pattern/pattern_bloc.dart';
 import 'package:secpasscrypt/feature/login/screen_purpose.dart';
 import 'package:secpasscrypt/feature/navigation/navigation.dart';
+import 'package:secpasscrypt/time_lock/time_lock_bloc.dart';
 
 class PatternScreenArguments {
   final ScreenPurpose purpose;
+  final bool startedFromTimeLock;
 
-  PatternScreenArguments(this.purpose);
+  PatternScreenArguments(this.purpose, {this.startedFromTimeLock = false});
 }
 
 class PatternScreen extends StatefulWidget {
   static const route = "/pattern";
   final ScreenPurpose purpose;
+  final bool startedFromTimeLock;
 
-  PatternScreen(this.purpose);
+  PatternScreen(this.purpose, {this.startedFromTimeLock = false});
 
   @override
   _PatternScreenState createState() => _PatternScreenState();
@@ -32,8 +36,13 @@ class _PatternScreenState extends State<PatternScreen> {
       cubit: _bloc,
       listener: (context, state) {
         if (state is CorrectPattern) {
-          popToRoot(context);
-          pushReplacementNamed(context, ListScreen.route);
+          if (widget.startedFromTimeLock) {
+            popScreen(context);
+          } else {
+            popToRoot(context);
+            pushReplacementNamed(context, ListScreen.route);
+          }
+          GetIt.I.get<TimeLockBloc>().add(StartSession());
         }
         if (state is IncorrectPattern) {
           showIncorrectPatternDialog(context);

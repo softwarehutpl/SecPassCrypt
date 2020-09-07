@@ -7,6 +7,7 @@ import 'package:secpasscrypt/feature/data/edit/edit_screen.dart';
 import 'package:secpasscrypt/feature/data/list/list_bloc.dart';
 import 'package:secpasscrypt/feature/login/setup/setup_screen.dart';
 import 'package:secpasscrypt/feature/navigation/navigation.dart';
+import 'package:secpasscrypt/time_lock/time_lock_screen.dart';
 
 class ListScreen extends StatefulWidget {
   static const route = "/data/list";
@@ -24,28 +25,30 @@ class _ListScreenState extends State<ListScreen> {
   }
 
   Widget _buildScreen(BuildContext context) {
-    return BlocListener(
-      cubit: _bloc,
-      listener: (context, state) {
-        if (state is ConfirmSignOutState) {
-          _showSignOutDialog(context);
-        }
-        if (state is SignOutState) {
-          pushReplacementNamed(context, SetupScreen.route);
-        }
-      },
-      child: BlocBuilder(
-        cubit: _bloc..add(LoadEntries()),
-        builder: (context, state) {
-          return IgnorePointer(
-            ignoring: state is LoadingList,
-            child: Scaffold(
-              appBar: _buildAppBar(context, state),
-              body: _buildBody(context, state),
-              floatingActionButton: _buildAddButton(context),
-            ),
-          );
+    return TimeLockScreen(
+      child: BlocListener(
+        cubit: _bloc,
+        listener: (context, state) {
+          if (state is ConfirmSignOutState) {
+            _showSignOutDialog(context);
+          }
+          if (state is SignOutState) {
+            pushReplacementNamed(context, SetupScreen.route);
+          }
         },
+        child: BlocBuilder(
+          cubit: _bloc..add(LoadEntries()),
+          builder: (context, state) {
+            return IgnorePointer(
+              ignoring: state is LoadingList,
+              child: Scaffold(
+                appBar: _buildAppBar(context, state),
+                body: _buildBody(context, state),
+                floatingActionButton: _buildAddButton(context),
+              ),
+            );
+          },
+        ),
       ),
     );
   }

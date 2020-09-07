@@ -1,22 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:secpasscrypt/feature/data/list/list_screen.dart';
 import 'package:secpasscrypt/feature/login/screen_purpose.dart';
 import 'package:secpasscrypt/feature/navigation/navigation.dart';
 import 'package:secpasscrypt/feature/login/password/password_bloc.dart';
+import 'package:secpasscrypt/time_lock/time_lock_bloc.dart';
 
 class PasswordScreenArguments {
   final ScreenPurpose purpose;
+  final bool startedFromTimeLock;
 
-  PasswordScreenArguments(this.purpose);
+  PasswordScreenArguments(this.purpose, {this.startedFromTimeLock = false});
 }
 
 class PasswordScreen extends StatefulWidget {
   static const route = "/password";
   final ScreenPurpose purpose;
+  final bool startedFromTimeLock;
 
-  PasswordScreen(this.purpose);
+  PasswordScreen(this.purpose, {this.startedFromTimeLock = false});
 
   @override
   _PasswordScreenState createState() => _PasswordScreenState();
@@ -33,8 +37,13 @@ class _PasswordScreenState extends State<PasswordScreen> {
       cubit: _bloc,
       listener: (context, state) {
         if (state is CorrectPassword) {
-          popToRoot(context);
-          pushReplacementNamed(context, ListScreen.route);
+          if (widget.startedFromTimeLock) {
+            popScreen(context);
+          } else {
+            popToRoot(context);
+            pushReplacementNamed(context, ListScreen.route);
+          }
+          GetIt.I.get<TimeLockBloc>().add(StartSession());
         }
         if (state is IncorrectPassword) {
           showIncorrectPasswordDialog(context);

@@ -1,24 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:secpasscrypt/feature/data/list/list_screen.dart';
 import 'package:secpasscrypt/feature/login/pin/pin_bloc.dart';
 import 'package:secpasscrypt/feature/login/screen_purpose.dart';
 import 'package:secpasscrypt/feature/navigation/navigation.dart';
+import 'package:secpasscrypt/time_lock/time_lock_bloc.dart';
 
 class PinScreenArguments {
   final ScreenPurpose purpose;
+  final bool startedFromTimeLock;
 
-  PinScreenArguments(this.purpose);
+  PinScreenArguments(this.purpose, {this.startedFromTimeLock = false});
 }
 
 class PinScreen extends StatefulWidget {
   static const route = "/pin";
   final ScreenPurpose purpose;
+  final bool startedFromTimeLock;
 
-  PinScreen(this.purpose);
+  PinScreen(this.purpose, {this.startedFromTimeLock = false});
 
   @override
   _PinScreenState createState() => _PinScreenState();
@@ -35,8 +39,13 @@ class _PinScreenState extends State<PinScreen> {
       cubit: _bloc,
       listener: (context, state) {
         if (state is CorrectPin) {
-          popToRoot(context);
-          pushReplacementNamed(context, ListScreen.route);
+          if (widget.startedFromTimeLock) {
+            popScreen(context);
+          } else {
+            popToRoot(context);
+            pushReplacementNamed(context, ListScreen.route);
+          }
+          GetIt.I.get<TimeLockBloc>().add(StartSession());
         }
         if (state is IncorrectPin) {
           _pinController.text = "";

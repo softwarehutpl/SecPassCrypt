@@ -1,22 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:secpasscrypt/feature/data/list/list_screen.dart';
 import 'package:secpasscrypt/feature/login/biometric/biometric_bloc.dart';
 import 'package:secpasscrypt/feature/login/screen_purpose.dart';
 import 'package:secpasscrypt/feature/navigation/navigation.dart';
+import 'package:secpasscrypt/time_lock/time_lock_bloc.dart';
 
 class BiometricScreenArguments {
   final ScreenPurpose purpose;
+  final bool startedFromTimeLock;
 
-  BiometricScreenArguments(this.purpose);
+  BiometricScreenArguments(this.purpose, {this.startedFromTimeLock = false});
 }
 
 class BiometricScreen extends StatefulWidget {
   static const route = "/biometric";
   final ScreenPurpose purpose;
+  final bool startedFromTimeLock;
 
-  BiometricScreen(this.purpose);
+  BiometricScreen(this.purpose, {this.startedFromTimeLock = false});
 
   @override
   _BiometricScreenState createState() => _BiometricScreenState();
@@ -38,8 +42,13 @@ class _BiometricScreenState extends State<BiometricScreen> {
           }
         }
         if (state is CorrectBiometric) {
-          popToRoot(context);
-          pushReplacementNamed(context, ListScreen.route);
+          if (widget.startedFromTimeLock) {
+            popScreen(context);
+          } else {
+            popToRoot(context);
+            pushReplacementNamed(context, ListScreen.route);
+          }
+          GetIt.I.get<TimeLockBloc>().add(StartSession());
         }
       },
       child: BlocBuilder(
